@@ -600,12 +600,12 @@ static void freeifaddrs(struct ifaddrs *ifa)
 	if (!ifa) {
 		return;
 	}
-	free(ifa->ifa_name);
-	free(ifa->ifa_addr);
-	free(ifa->ifa_netmask);
-	free(ifa->ifa_dstaddr);
-	free(ifa->ifa_data);
-	freeifaddrs(ifa->ifa_next);
+	if(ifa->ifa_name) free(ifa->ifa_name);
+	if(ifa->ifa_addr) free(ifa->ifa_addr);
+	if(ifa->ifa_netmask) free(ifa->ifa_netmask);
+	if(ifa->ifa_dstaddr) free(ifa->ifa_dstaddr);
+	if(ifa->ifa_data) free(ifa->ifa_data);
+	if(ifa->ifa_next) freeifaddrs(ifa->ifa_next);
 	free(ifa);
 }
 
@@ -689,6 +689,8 @@ static int getifaddrs(struct ifaddrs** ifap)
 				ifa = ifanew;
 				ifa->ifa_next = NULL;
 			}
+
+			memset(ifa, 0, sizeof(struct ifaddrs));
 			ifa->ifa_data = NULL;
 
 			/* name */
